@@ -424,6 +424,12 @@ def train(config_path: str):
         if len(val_loader.loader) > 0:
             val_score = 0
             val_loader.refresh()
+
+         # ------------------------- ADDED -------------------------------------#
+            if not hasattr(val_loader, '_visualization_batch'):
+                val_loader._visualization_batch = None
+                val_loader._batch_counter = 0
+         # ------------------------- ADDED END-------------------------------------#
             if validation_time_limit is not None:
                 elapsed_time = 0
                 last_time = time.time()
@@ -451,6 +457,23 @@ def train(config_path: str):
             with torch.no_grad():
                 i = 0
                 for batch in val_bar:
+
+                    # --------- ADDED FOR IMAGE VISUALIZATION ------------------------ #
+                    if val_loader._visualization_batch is None or (i % 20 == 0 and random.random() < 0.1):
+                        if len(input_keys) > 1:
+                            vis_inputs = {key: batch[key].clone() for key in input_keys}
+                        else:
+                            vis_inputs = batch[input_keys[0]].clone()
+                        
+                        vis_outputs = model(vis_inputs if len(input_keys) > 1 else vis_inputs)
+                        
+                        if len(target_keys) > 1:
+                            vis_targets = {key: batch[key].clone() for key in target_keys}
+                        else:
+                            vis_targets = batch[target_keys[0]].clone()
+                        
+                        val_loader._visualization_batch = (vis_inputs, vis_targets, vis_outputs)
+                    # --------- ADDED END ---------------------------------------------------- #
                     if len(input_keys) > 1:
                         inputs = {key: batch[key] for key in input_keys}
                     else:
@@ -488,39 +511,67 @@ def train(config_path: str):
                 post_fix_dict["Validation"] = f"{val_score:.4f}"
 
         # Generate and save figures from the last batch of the validation to appear in tensorboard
-        if isinstance(outputs, dict):
-            outputs = list(outputs.values())
-        if len(input_keys) == len(target_keys) != 1:
-            # If the number of input and target keys is the same, assume they are paired
-            for i, (in_key, target_key) in enumerate(zip(input_keys, target_keys)):
-                figs = get_fig_dict(
-                    input_data=batch[in_key],
-                    target_data=batch[target_key],
-                    outputs=outputs[i],
-                    classes=classes,
-                )
-                array_name = longest_common_substring(in_key, target_key)
-                for name, fig in figs.items():
-                    writer.add_figure(f"{name}: {array_name}", fig, n_iter)
-                    plt.close(fig)
+        # if isinstance(outputs, dict):
+        #     outputs = list(outputs.values())
+        # if len(input_keys) == len(target_keys) != 1:
+        #     # If the number of input and target keys is the same, assume they are paired
+        #     for i, (in_key, target_key) in enumerate(zip(input_keys, target_keys)):
+        #         figs = get_fig_dict(
+        #             input_data=batch[in_key],
+        #             target_data=batch[target_key],
+        #             outputs=outputs[i],
+        #             classes=classes,
+        #         )
+        #         array_name = longest_common_substring(in_key, target_key)
+        #         for name, fig in figs.items():
+        #             writer.add_figure(f"{name}: {array_name}", fig, n_iter)
+        #             plt.close(fig)
 
+        # else:
+        #     # If the number of input and target keys is not the same, assume that only the first input and target keys match
+        #     if isinstance(outputs, list):
+        #         outputs = outputs[0]
+        #     if isinstance(inputs, dict):
+        #         inputs = list(inputs.values())[0]
+        #     elif isinstance(inputs, list):
+        #         inputs = inputs[0]
+        #     if isinstance(targets, dict):
+        #         targets = list(targets.values())[0]
+        #     elif isinstance(targets, list):
+        #         targets = targets[0]
+        #     figs = get_fig_dict(inputs, targets, outputs, classes)
+        #     for name, fig in figs.items():
+        #         writer.add_figure(name, fig, n_iter)
+        #         plt.close(fig)
+        # TODO: Make this more general rather than only taking the first key
+
+        # --------------------------- CHANGED TO SHOW RANDOM VALIDATION IMAGE -----------------------------
+        if hasattr(val_loader, '_visualization_batch') and val_loader._visualization_batch is not None:
+            vis_inputs, vis_targets, vis_outputs = val_loader._visualization_batch
+            
+            # Convert to single tensors for visualization
+            if isinstance(vis_outputs, dict):
+                vis_outputs = list(vis_outputs.values())[0]
+            if isinstance(vis_inputs, dict):
+                vis_inputs = list(vis_inputs.values())[0]
+            if isinstance(vis_targets, dict):
+                vis_targets = list(vis_targets.values())[0]
+                
+            figs = get_fig_dict(vis_inputs, vis_targets, vis_outputs, classes)
         else:
-            # If the number of input and target keys is not the same, assume that only the first input and target keys match
-            if isinstance(outputs, list):
-                outputs = outputs[0]
+            # Fallback to current batch if no saved batch
+            if isinstance(outputs, dict):
+                outputs = list(outputs.values())[0]
             if isinstance(inputs, dict):
                 inputs = list(inputs.values())[0]
-            elif isinstance(inputs, list):
-                inputs = inputs[0]
             if isinstance(targets, dict):
                 targets = list(targets.values())[0]
-            elif isinstance(targets, list):
-                targets = targets[0]
             figs = get_fig_dict(inputs, targets, outputs, classes)
-            for name, fig in figs.items():
-                writer.add_figure(name, fig, n_iter)
-                plt.close(fig)
 
+        for name, fig in figs.items():
+            writer.add_figure(name, fig, n_iter)
+            plt.close(fig)
+        # --------------------------- END CHANGED --------------------------------
         # Clear the GPU memory again
         torch.cuda.empty_cache()
 

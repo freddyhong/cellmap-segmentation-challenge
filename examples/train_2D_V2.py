@@ -30,6 +30,26 @@ import torch.nn.functional as F
 
 from cellmap_segmentation_challenge.models import ResNet, UNet_2D
 
+class CustomWeightedLoss(nn.Module):
+    def __init__(self, class_weights=None, pos_weight=None, reduction='none'):
+        super().__init__()
+        self.class_weights = class_weights
+        self.reduction = reduction
+        
+    def forward(self, pred, target):
+        loss = F.binary_cross_entropy_with_logits(pred, target, reduction='none')
+        
+        if self.class_weights is not None:
+            weights = torch.tensor(self.class_weights, device=pred.device, dtype=pred.dtype)
+
+            weights = weights.view(1, -1, 1, 1)
+
+            weight_mask = torch.where(target > 0.5, weights, 1.0)
+            loss = loss * weight_mask
+        
+        return loss
+    
+
 # %% Set hyperparameters and other configurations
 learning_rate = 0.0001  # learning rate for the optimizer
 batch_size = 16  # batch size for the dataloader
@@ -46,12 +66,12 @@ iterations_per_epoch = 1000  # number of iterations per epoch
 random_seed = 42  # random seed for reproducibility
 
 device = "cuda"
-classes = ["cell", "endo", "ld", "mito", "mt", "ves", "lyso"]
+classes = ["endo", "cell", "lyso", "mito", "nuc"]
 
 # Defining model (comment out all that are not used)
 # 2D UNets
-model_name = "2d_unet"  # name of the model to use
-model_to_load = "2d_unet"  # name of the pre-trained model to load
+model_name = "2d_unet_V2"  # name of the model to use
+model_to_load = "2d_unet_V2"  # name of the pre-trained model to load
 model = UNet_2D(1, len(classes))
 
 # # 2D ResNet [uncomment to use]
@@ -84,14 +104,16 @@ max_grad_norm = 1.0
 torch.backends.cudnn.benchmark = True
 filter_by_scale = True
 use_mutual_exclusion = False
-force_all_classes = 'validate'
-weight_loss = True 
+force_all_classes = True
+weight_loss = False
 
+custom_pos_weight = torch.tensor([0.8, 0.5, 1.0, 0.7, 0.6], dtype=torch.float32)
 
-validation_time_limit = None  # time limit in seconds for the validation step
-validation_batch_limit = None  # Skip validation
-
-use_s3 = True # Use S3 for data loading
+criterion = CustomWeightedLoss
+criterion_kwargs = {
+    "class_weights": [0.8, 0.5, 1.0, 0.7, 0.6],  # endo, cell, lyso, mito, nuc
+    "reduction": "none"                         
+}
 
 optimizer = torch.optim.AdamW(
     model.parameters(),
@@ -111,6 +133,10 @@ scheduler_kwargs = {
 }
 
 
+validation_time_limit = None  # time limit in seconds for the validation step
+validation_batch_limit = None  # Skip validation
+
+use_s3 = True # Use S3 for data loading
 
 if __name__ == "__main__":
     from cellmap_segmentation_challenge import train
