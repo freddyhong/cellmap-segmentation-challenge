@@ -511,38 +511,6 @@ def train(config_path: str):
                 post_fix_dict["Validation"] = f"{val_score:.4f}"
 
         # Generate and save figures from the last batch of the validation to appear in tensorboard
-        # if isinstance(outputs, dict):
-        #     outputs = list(outputs.values())
-        # if len(input_keys) == len(target_keys) != 1:
-        #     # If the number of input and target keys is the same, assume they are paired
-        #     for i, (in_key, target_key) in enumerate(zip(input_keys, target_keys)):
-        #         figs = get_fig_dict(
-        #             input_data=batch[in_key],
-        #             target_data=batch[target_key],
-        #             outputs=outputs[i],
-        #             classes=classes,
-        #         )
-        #         array_name = longest_common_substring(in_key, target_key)
-        #         for name, fig in figs.items():
-        #             writer.add_figure(f"{name}: {array_name}", fig, n_iter)
-        #             plt.close(fig)
-
-        # else:
-        #     # If the number of input and target keys is not the same, assume that only the first input and target keys match
-        #     if isinstance(outputs, list):
-        #         outputs = outputs[0]
-        #     if isinstance(inputs, dict):
-        #         inputs = list(inputs.values())[0]
-        #     elif isinstance(inputs, list):
-        #         inputs = inputs[0]
-        #     if isinstance(targets, dict):
-        #         targets = list(targets.values())[0]
-        #     elif isinstance(targets, list):
-        #         targets = targets[0]
-        #     figs = get_fig_dict(inputs, targets, outputs, classes)
-        #     for name, fig in figs.items():
-        #         writer.add_figure(name, fig, n_iter)
-        #         plt.close(fig)
         # TODO: Make this more general rather than only taking the first key
 
         # --------------------------- CHANGED TO SHOW RANDOM VALIDATION IMAGE -----------------------------
@@ -571,7 +539,18 @@ def train(config_path: str):
         for name, fig in figs.items():
             writer.add_figure(name, fig, n_iter)
             plt.close(fig)
-        # --------------------------- END CHANGED --------------------------------
+
+        # if isinstance(outputs, dict):
+        #     outputs = list(outputs.values())[0]
+        # if isinstance(inputs, dict):
+        #     inputs = list(inputs.values())[0]
+        # if isinstance(targets, dict):
+        #     targets = list(targets.values())[0]
+        # figs = get_fig_dict(inputs, targets, outputs, classes)
+        # for name, fig in figs.items():
+        #     writer.add_figure(name, fig, n_iter)
+        #     plt.close(fig)
+
         # Clear the GPU memory again
         torch.cuda.empty_cache()
 
