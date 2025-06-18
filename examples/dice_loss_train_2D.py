@@ -144,8 +144,8 @@ model = UNet_2D(1, len(classes))
 #     use_dropout=False  
 # )
 
-# load_model = "latest"  # load the "latest" model or the "best" validation model
-load_model = "dice_loss_V2_114.pth"
+load_model = "latest"  # load the "latest" model or the "best" validation model
+
 
 # Define the paths for saving the model and logs, etc.
 logs_save_path = UPath(
