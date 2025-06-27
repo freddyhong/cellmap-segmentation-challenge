@@ -22,6 +22,15 @@ __getattr__, __dir__, __all__ = lazy.attach(
             "get_formatted_fields",
         ],
         "loss": ["CellMapLossWrapper"],
+        "loss_fn": [
+            "DicePlusLoss",
+            "SymmetricFocalLoss",
+            "AsymmetricFocalLoss",
+            "SymmetricFocalTverskyLoss",
+            "AsymmetricFocalTverskyLoss",
+            "SymmetricUnifiedFocalLoss",
+            "AsymmetricUnifiedFocalLoss",
+        ],
         "security": ["analyze_script", "load_safe_config"],
         "utils": [
             "construct_test_crop_manifest",

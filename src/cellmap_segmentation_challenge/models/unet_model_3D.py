@@ -117,18 +117,30 @@ class UNet_3D(nn.Module):
         self.n_classes = n_classes
         self.trilinear = trilinear
 
-        self.inc = DoubleConv(n_channels, 64)
-        self.down1 = Down(64, 128)
-        self.down2 = Down(128, 256)
-        self.down3 = Down(256, 512)
-        factor = 2 if trilinear else 1
-        self.down4 = Down(512, 1024 // factor)
-        self.up1 = Up(1024, 512 // factor, trilinear)
-        self.up2 = Up(512, 256 // factor, trilinear)
-        self.up3 = Up(256, 128 // factor, trilinear)
-        self.up4 = Up(128, 64, trilinear)
-        self.outc = OutConv(64, n_classes)
+        # self.inc = DoubleConv(n_channels, 64)
+        # self.down1 = Down(64, 128)
+        # self.down2 = Down(128, 256)
+        # self.down3 = Down(256, 512)
+        # factor = 2 if trilinear else 1
+        # self.down4 = Down(512, 1024 // factor)
+        # self.up1 = Up(1024, 512 // factor, trilinear)
+        # self.up2 = Up(512, 256 // factor, trilinear)
+        # self.up3 = Up(256, 128 // factor, trilinear)
+        # self.up4 = Up(128, 64, trilinear)
+        # self.outc = OutConv(64, n_classes)
 
+        self.inc = DoubleConv(n_channels, 32)
+        self.down1 = Down(32, 64)
+        self.down2 = Down(64, 128)
+        self.down3 = Down(128, 256)
+        factor = 2 if trilinear else 1
+        self.down4 = Down(256, 512 // factor)
+        self.up1 = Up(512, 256 // factor, trilinear)
+        self.up2 = Up(256, 128 // factor, trilinear)
+        self.up3 = Up(128, 64 // factor, trilinear)
+        self.up4 = Up(64, 32, trilinear)
+        self.outc = OutConv(32, n_classes)
+        
     def forward(self, x):
         x1 = self.inc(x)
         x2 = self.down1(x1)

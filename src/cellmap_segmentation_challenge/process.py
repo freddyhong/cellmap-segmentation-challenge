@@ -133,7 +133,6 @@ def process(
     for crop, (in_path, out_path) in crop_dict.items():
         for label in classes:
             class_in_path = str(UPath(in_path) / label)
-
             # Get the boundaries of the crop
             input_images = {
                 array_name: CellMapImage(

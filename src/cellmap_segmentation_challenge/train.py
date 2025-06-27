@@ -5,8 +5,8 @@ import time
 import numpy as np
 import torch
 import torchvision.transforms.v2 as T
-from cellmap_data.utils import get_fig_dict, longest_common_substring
-from cellmap_data.transforms.augment import NaNtoNum, Binarize, Normalize
+from cellmap_data.utils import get_fig_dict
+from cellmap_data.transforms.augment import NaNtoNum, Binarize, Normalize, RandomGamma, RandomContrast, GaussianBlur, GaussianNoise
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 from upath import UPath
@@ -133,13 +133,22 @@ def train(config_path: str):
     train_raw_value_transforms = getattr(
         config,
         "train_raw_value_transforms",
-        T.Compose(
-            [
-                T.ToDtype(torch.float),
-                Normalize(),
-                NaNtoNum({"nan": 0, "posinf": None, "neginf": None}),
-            ],
-        ),
+        # T.Compose(
+        #     [
+        #         T.ToDtype(torch.float),
+        #         Normalize(),
+        #         NaNtoNum({"nan": 0, "posinf": None, "neginf": None}),
+        #     ],
+        # ),
+        T.Compose([
+            Normalize(),  # scale to 0-1
+            NaNtoNum({"nan": 0, "posinf": None, "neginf": None}),
+            RandomGamma(gamma_range=(0.8, 1.2)),
+            RandomContrast(contrast_range=(0.75, 1.25)),
+            GaussianNoise(mean=0.0, std=0.05),
+            GaussianBlur(kernel_size=3, sigma=1.0, dim=2, channels=1),
+            ]
+        )
     )
     val_raw_value_transforms = getattr(
         config,
