@@ -1,8 +1,12 @@
 from cellmap_segmentation_challenge.utils import load_safe_config
+import torch
+from scipy.ndimage import gaussian_filter
+import numpy as np
 
 # Load the configuration file
 config_path = __file__.replace("process", "train")
 config = load_safe_config(config_path)
+
 
 # Bring the required configurations into the global namespace
 batch_size = getattr(config, "batch_size", 8)
@@ -15,8 +19,9 @@ classes = config.classes
 
 # Define the process function, which takes a numpy array as input and returns a numpy array as output
 def process_func(x):
-    # Simple thresholding function
-    return x > 0.5
+    x_np = torch.sigmoid(x).cpu().numpy()
+    x_np = gaussian_filter(x_np, sigma=1)
+    return torch.tensor((x_np > 0.7).astype(np.float32)).to(x.device)
 
 
 if __name__ == "__main__":
