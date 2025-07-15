@@ -13,36 +13,25 @@ from .config import PREDICTIONS_PATH, PROCESSED_PATH
 from .utils import load_safe_config, fetch_test_crop_manifest
 from .utils.datasplit import get_formatted_fields
 
+# This is the new, correct _process function for process.py
 
 def _process(
     dataset_writer_kwargs: dict[str, Any], process_func: Callable, batch_size: int = 8
 ) -> None:
-    """
-    Process and save arrays using an arbitrary process function.
-
-    Parameters
-    ----------
-    dataset_writer_kwargs : dict
-        A dictionary containing the specifications for data loading and writing.
-    process_func : Callable
-        The function to apply to the input data. Should take an array as input and return an array as output.
-    batch_size : int, optional
-        The batch size to use for processing the data. Default is 8.
-    """
-    # Create the dataset writer
     dataset_writer = CellMapDatasetWriter(**dataset_writer_kwargs)
 
-    # Process the data
+    lumen_path = dataset_writer_kwargs["raw_path"]
+
     for batch in tqdm(dataset_writer.loader(batch_size=batch_size), dynamic_ncols=True):
-        # Get the input data
-        inputs = batch["input"]
 
-        # Process the data
-        outputs = process_func(inputs)
+        centers_for_batch = [dataset_writer.get_center(idx.item()) for idx in batch['idx']]
 
-        # Write the data
+        batch["lumen_path"] = lumen_path
+        batch["centers"] = centers_for_batch
+
+        outputs = process_func(batch)
+        
         dataset_writer[batch["idx"]] = {"output": outputs}
-
 
 def process(
     config_path: str | UPath,
@@ -133,6 +122,7 @@ def process(
     for crop, (in_path, out_path) in crop_dict.items():
         for label in classes:
             class_in_path = str(UPath(in_path) / label)
+
             # Get the boundaries of the crop
             input_images = {
                 array_name: CellMapImage(
