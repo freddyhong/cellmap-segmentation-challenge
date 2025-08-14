@@ -5,12 +5,9 @@ from skimage.morphology import remove_small_objects
 from skimage.measure import label as find_instances
 import numpy as np
 
-# Load the configuration file
-config_path = __file__.replace("process", "train")
+config_path = __file__.replace("multiclass_post_process", "train_3D")
 config = load_safe_config(config_path)
 
-
-# Bring the required configurations into the global namespace
 batch_size = getattr(config, "batch_size", 8)
 input_array_info = getattr(
     config, "input_array_info", {"shape": (1, 128, 128), "scale": (8, 8, 8)}
@@ -18,37 +15,30 @@ input_array_info = getattr(
 target_array_info = getattr(config, "target_array_info", input_array_info)
 classes = config.classes
 
-# batch_size = 1
-# input_array_info = {"shape": (128, 128, 128), "scale": (8, 8, 8)}
-# target_array_info = {"shape": (128, 128, 128), "scale": (8, 8, 8)}
 
 # classes = ["mito", "mito_lum", "mito_mem", "cell", "ecs", "ld", "ld_mem", "ld_lum", "lyso", "lyso_lum", "lyso_mem", 
 #            "mt", "mt_in", "mt_out", "np", "np_in", "np_out", "nuc", "nucpl", "perox", "perox_lum", "perox_mem", 
 #            "ves", "ves_mem", "ves_lum", "vim", "endo", "endo_lum", "endo_mem"]   # for predictions
 
 # classes = ["mito", "endo", "lyso", "cell", "perox", "ves"]
-classes = ["cell"]
-# Define the process function, which takes a numpy array as input sand returns a numpy array as output
+classes = ["lyso"]
+
 def process_func(x):
     if isinstance(x, dict):
         tensor_input = list(x.values())[0]
     else:
-        tensor_input = x # If it's already a tensor, use it directly
+        tensor_input = x
     print(tensor_input.shape)
-    # Now, all subsequent operations use the extracted tensor
-    x_np = torch.sigmoid(tensor_input).cpu().numpy()
-    x_np = gaussian_filter(x_np, sigma=0.5)
+    x_np = tensor_input.cpu().numpy()
+    x_np = gaussian_filter(x_np, sigma=0.6)
 
-    # threshold = threshold_otsu(x_np)
-
-    binary_mask = x_np > 0.5
+    binary_mask = x_np > 0.4
     binary_mask = binary_fill_holes(binary_mask)
     instance_labels = find_instances(binary_mask)
-    instance_labels = remove_small_objects(instance_labels, min_size=100)
+    instance_labels = remove_small_objects(instance_labels, min_size=50)
     return torch.tensor(instance_labels.astype(np.float32)).to(tensor_input.device) 
 
 if __name__ == "__main__":
     from cellmap_segmentation_challenge import process
 
-    # Call the process function with the configuration file
     process(__file__, overwrite=True)
