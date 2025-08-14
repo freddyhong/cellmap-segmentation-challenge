@@ -4,6 +4,7 @@ from glob import glob
 from typing import Any
 
 import torch
+import torch.nn.functional as F
 import torchvision.transforms.v2 as T
 from cellmap_data import CellMapDatasetWriter, CellMapImage
 from cellmap_data.transforms.augment import NaNtoNum, Normalize
@@ -119,6 +120,13 @@ def _predict(
 
             # Save the outputs
             dataset_writer[batch["idx"]] = outputs
+
+            # ======================== MULTI CLASS PREDICTION ======================================================
+            # inputs = batch["input"]
+            # logits = model(inputs)
+            # probs = F.softmax(logits, dim=1)
+            # outputs = {"output": probs}
+            # dataset_writer[batch["idx"]] = outputs
 
 
 def predict(

@@ -24,12 +24,9 @@ __getattr__, __dir__, __all__ = lazy.attach(
         "loss": ["CellMapLossWrapper"],
         "loss_fn": [
             "DicePlusLoss",
-            "SymmetricFocalLoss",
-            "AsymmetricFocalLoss",
-            "SymmetricFocalTverskyLoss",
-            "AsymmetricFocalTverskyLoss",
-            "SymmetricUnifiedFocalLoss",
-            "AsymmetricUnifiedFocalLoss",
+            "FocalLoss",
+            "FocalDicePlusLoss",
+            "DiceBCELoss"
         ],
         "security": ["analyze_script", "load_safe_config"],
         "utils": [
@@ -47,5 +44,12 @@ __getattr__, __dir__, __all__ = lazy.attach(
             "save_numpy_class_arrays_to_zarr",
             "save_numpy_class_labels_to_zarr",
         ],
+        "custom_fig": [
+            "get_fig_dict",
+            "get_image_grid", 
+            "get_image_grid_numpy",
+            "get_image_dict",
+            "fig_to_image",
+        ]
     },
 )

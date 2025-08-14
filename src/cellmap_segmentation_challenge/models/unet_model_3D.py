@@ -18,10 +18,12 @@ class DoubleConv(nn.Module):
             mid_channels = out_channels
         self.double_conv = nn.Sequential(
             nn.Conv3d(in_channels, mid_channels, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm3d(mid_channels),
+            # nn.BatchNorm3d(mid_channels),
+            nn.InstanceNorm3d(mid_channels),
             nn.ReLU(inplace=True),
             nn.Conv3d(mid_channels, out_channels, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm3d(out_channels),
+            # nn.BatchNorm3d(out_channels),
+            nn.InstanceNorm3d(out_channels),
             nn.ReLU(inplace=True),
         )
 

@@ -6,6 +6,7 @@ __getattr__, __dir__, __all__ = lazy.attach(
     submod_attrs={
         "predict": ["predict"],
         "process": ["process"],
+        "multiclass_process": ["process_multiclass"],
         "train": ["train"],
         "visualize": ["visualize"],
         "evaluate": [

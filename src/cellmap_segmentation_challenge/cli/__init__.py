@@ -8,6 +8,7 @@ from .process import process_cli
 from .train import train_cli
 from .visualize import visualize_cli
 from .speedtest import speedtest_cli
+from .process_multiclass import process_multiclass_cli
 
 
 @click.group
@@ -31,3 +32,4 @@ run.add_command(get_dataset_counts_cli, name="get-counts")
 run.add_command(visualize_cli, name="visualize")
 run.add_command(package_submission_cli, name="pack-results")
 run.add_command(speedtest_cli, name="speedtest")
+run.add_command(process_multiclass_cli, name="process_multiclass")

@@ -212,6 +212,13 @@ def score_instance(
         )
         return {
             "accuracy": 0,
+            "dice_score": 0,
+            "iou": 0,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "false_positive_ratio": 0,
+            "false_negative_ratio": 0,
             "hausdorff_distance": np.inf,
             "normalized_hausdorff_distance": 0,
             "combined_score": 0,
@@ -316,13 +323,53 @@ def score_instance(
     normalized_hausdorff_dist = 1.01 ** (
         -hausdorff_dist / np.linalg.norm(voxel_size)
     )  # normalize Hausdorff distance to [0, 1] using the maximum distance represented by a voxel. 32 is arbitrarily chosen to have a reasonable range
-    combined_score = (accuracy * normalized_hausdorff_dist) ** 0.5
+
+    # ================ adding dice and IOU =============================== #
+
+    pred_label = (pred_label > 0.0).flatten()
+    truth_label = (truth_label > 0.0).flatten()
+    
+    true_positives = np.sum(np.logical_and(pred_label, truth_label))
+    false_positives = np.sum(pred_label) - true_positives
+    false_negatives = np.sum(truth_label) - true_positives
+    total_ground_truth_positives = true_positives + false_negatives
+
+    if total_ground_truth_positives > 0:
+        false_positive_ratio = false_positives / total_ground_truth_positives
+        false_negative_ratio = false_negatives / total_ground_truth_positives
+    else:
+        false_positive_ratio = 0.0
+        false_negative_ratio = 0.0
+
+    # Compute the scores
+
+    if np.sum(truth_label + pred_label) == 0:
+        # If there are no true positives, set the scores to 1
+        logging.debug("No true positives found. Setting scores to 1.")
+        dice_score = 1
+    else:
+        dice_score = 1 - dice(truth_label, pred_label)
+    scores = {
+        "iou": jaccard_score(truth_label, pred_label, zero_division=1),
+        "dice_score": dice_score if not np.isnan(dice_score) else 1,
+    }
+
+    # chaning conbined score to be geometric mean of iou and normalized hausdorff distance
+    combined_score = (scores["iou"] * normalized_hausdorff_dist) ** 0.5
+
     logging.info(f"Accuracy: {accuracy:.4f}")
     logging.info(f"Hausdorff Distance: {hausdorff_dist:.4f}")
     logging.info(f"Normalized Hausdorff Distance: {normalized_hausdorff_dist:.4f}")
     logging.info(f"Combined Score: {combined_score:.4f}")
     return {
         "accuracy": accuracy,
+        "dice_score": scores["dice_score"],
+        "iou": scores["iou"],
+        "true_positives": int(true_positives),
+        "false_positives": int(false_positives),
+        "false_negatives": int(false_negatives),
+        "false_positive_ratio": false_positive_ratio,
+        "false_negative_ratio": false_negative_ratio,
         "hausdorff_distance": hausdorff_dist,
         "normalized_hausdorff_distance": normalized_hausdorff_dist,
         "combined_score": combined_score,
@@ -446,6 +493,13 @@ def empty_label_score(
     if label in instance_classes:
         return {
             "accuracy": 0,
+            "dice_score": 0,
+            "iou": 0,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "false_positive_ratio": 0,
+            "false_negative_ratio": 0,
             "hausdorff_distance": 0,
             "normalized_hausdorff_distance": 0,
             "combined_score": 0,
@@ -624,6 +678,13 @@ def combine_scores(
                 if label not in label_scores:
                     label_scores[label] = {
                         "accuracy": 0,
+                        "dice_score": 0,
+                        "iou": 0,
+                        "true_positives": 0,
+                        "false_positives": 0,
+                        "false_negatives": 0,
+                        "false_positive_ratio": 0,
+                        "false_negative_ratio": 0,
                         "hausdorff_distance": 0,
                         "normalized_hausdorff_distance": 0,
                         "combined_score": 0,
@@ -645,6 +706,13 @@ def combine_scores(
     for label in label_scores:
         if label in instance_classes:
             label_scores[label]["accuracy"] /= total_volumes[label]
+            label_scores[label]["dice_score"] /= total_volumes[label]
+            label_scores[label]["iou"] /= total_volumes[label]
+            label_scores[label]["true_positives"] /= total_volumes[label]
+            label_scores[label]["false_positives"] /= total_volumes[label]
+            label_scores[label]["false_negatives"] /= total_volumes[label]
+            label_scores[label]["false_positive_ratio"] /= total_volumes[label]
+            label_scores[label]["false_negative_ratio"] /= total_volumes[label]
             label_scores[label]["hausdorff_distance"] /= total_volumes[label]
             label_scores[label]["normalized_hausdorff_distance"] /= total_volumes[label]
             label_scores[label]["combined_score"] /= total_volumes[label]

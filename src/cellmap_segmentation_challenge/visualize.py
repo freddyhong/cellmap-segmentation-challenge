@@ -24,7 +24,7 @@ SEARCH_PATHS = {
     "gt": SEARCH_PATH.format(dataset="{dataset}", name=CROP_NAME),
     "predictions": (UPath(PREDICTIONS_PATH) / "{label}").path,
     "processed": (UPath(PROCESSED_PATH) / "{label}").path,
-    # "submission": (UPath(SUBMISSION_PATH) / "{crop}" / "{label}").path,
+    "submission": (UPath(SUBMISSION_PATH) / "{crop}" / "{label}").path,
 }
 
 

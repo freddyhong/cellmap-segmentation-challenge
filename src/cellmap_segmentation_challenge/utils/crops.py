@@ -13,6 +13,12 @@ TEST_CROP_MANIFEST_URL = os.environ.get(
     "https://raw.githubusercontent.com/janelia-cellmap/cellmap-segmentation-challenge/refs/heads/main/src/cellmap_segmentation_challenge/utils/test_crop_manifest.csv",
 )
 
+# TEST_CROP_MANIFEST_URL = os.environ.get(
+#     "CSC_TEST_CROP_MANIFEST_URL",
+#     "https://raw.githubusercontent.com/janelia-cellmap/cellmap-segmentation-challenge/refs/heads/main/src/cellmap_segmentation_challenge/utils/train_crop_manifest.csv",
+# )
+
+
 MANIFEST_URL = os.environ.get(
     "CSC_FETCH_DATA_MANIFEST_URL",
     "https://raw.githubusercontent.com/janelia-cellmap/cellmap-segmentation-challenge/refs/heads/main/src/cellmap_segmentation_challenge/utils/manifest.csv",

@@ -11,3 +11,4 @@ from .unet_model_2D import UNet_2D
 from .unet_model_3D import UNet_3D
 from .vitnet import ViTVNet
 from .linear_regression import LinearRegression
+from .unet_plus_plus import UNet3DPlusPlus, UNet2DPlusPlus

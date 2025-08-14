@@ -5,12 +5,15 @@ import time
 import numpy as np
 import torch
 import torchvision.transforms.v2 as T
-from cellmap_data.utils import get_fig_dict
+# from cellmap_data.utils import get_fig_dict
+from .utils import get_fig_dict
 from cellmap_data.transforms.augment import NaNtoNum, Binarize, Normalize, RandomGamma, RandomContrast, GaussianBlur, GaussianNoise
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 from upath import UPath
 import matplotlib.pyplot as plt
+import pandas as pd
+import zarr
 
 from .models import ResNet, UNet_2D, UNet_3D, ViTVNet, get_model
 from .utils import (
@@ -22,6 +25,109 @@ from .utils import (
     format_string,
 )
 
+def print_memory_usage(step_name=""):
+    allocated = torch.cuda.memory_allocated() / 1024**2
+    reserved = torch.cuda.memory_reserved() / 1024**2
+    print(f"[{step_name}] GPU Memory: {allocated:.2f} MiB Allocated / {reserved:.2f} MiB Reserved")
+
+#=====================================================Validation Metrics ==========================================
+
+def calculate_dice_iou_per_class(pred: torch.Tensor, target: torch.Tensor, 
+                                       classes: list[str], epsilon: float = 1e-7) -> dict[str, dict[str, float]]:
+    """
+    More robust version that handles various edge cases and data formats.
+    """
+    
+    try:
+        # Validate inputs
+        if pred.size(0) != target.size(0):
+            raise ValueError(f"Batch size mismatch: pred={pred.size(0)}, target={target.size(0)}")
+        
+        # Handle different target formats
+        if target.dim() == pred.dim() - 1:
+            # Target is class indices, convert to one-hot
+            num_classes = pred.size(1)
+            target_indices = target.long()
+            # Clamp indices to valid range
+            target_indices = torch.clamp(target_indices, 0, num_classes - 1)
+            target_one_hot = torch.zeros_like(pred)
+            target_one_hot.scatter_(1, target_indices.unsqueeze(1), 1)
+            target = target_one_hot
+        
+        # Convert predictions to binary masks
+        if pred.size(1) == 1:
+            # Binary segmentation
+            pred_probs = torch.sigmoid(pred)
+            pred_mask = (pred_probs > 0.5).float()
+        else:
+            # Multi-class segmentation
+            pred_probs = torch.softmax(pred, dim=1)
+            pred_mask = torch.zeros_like(pred_probs)
+            pred_mask.scatter_(1, pred_probs.argmax(dim=1, keepdim=True), 1)
+        
+        # Ensure target is binary
+        target = (target > 0.5).float()
+        
+        # Calculate metrics
+        spatial_dims = tuple(range(2, pred.ndim))
+        
+        intersection = (pred_mask * target).sum(dim=spatial_dims)
+        pred_sum = pred_mask.sum(dim=spatial_dims)
+        target_sum = target.sum(dim=spatial_dims)
+        
+        # Dice
+        dice_union = pred_sum + target_sum
+        dice = torch.where(
+            dice_union > 0,
+            (2.0 * intersection + epsilon) / (dice_union + epsilon),
+            torch.ones_like(intersection)  # Perfect score when both are empty
+        )
+        
+        # IoU
+        iou_union = pred_sum + target_sum - intersection
+        iou = torch.where(
+            iou_union > 0,
+            (intersection + epsilon) / (iou_union + epsilon),
+            torch.ones_like(intersection)  # Perfect score when both are empty
+        )
+        
+        # Average across batch and handle NaN
+        dice_per_class = torch.nan_to_num(dice.mean(dim=0), nan=0.0)
+        iou_per_class = torch.nan_to_num(iou.mean(dim=0), nan=0.0)
+        
+        # Create results
+        results = {
+            'dice_per_class': {},
+            'iou_per_class': {},
+            'overall_dice': float(dice_per_class.mean().item()),
+            'overall_iou': float(iou_per_class.mean().item())
+        }
+        
+        # Map to class names
+        for i, class_name in enumerate(classes):
+            if i < len(dice_per_class):
+                results['dice_per_class'][class_name] = float(dice_per_class[i].item())
+                results['iou_per_class'][class_name] = float(iou_per_class[i].item())
+            else:
+                results['dice_per_class'][class_name] = 0.0
+                results['iou_per_class'][class_name] = 0.0
+        
+        return results
+        
+    except Exception as e:
+        print(f"Error in metrics calculation: {e}")
+        print(f"Pred shape: {pred.shape}, Target shape: {target.shape}")
+        print(f"Pred dtype: {pred.dtype}, Target dtype: {target.dtype}")
+        print(f"Pred range: [{pred.min():.3f}, {pred.max():.3f}]")
+        print(f"Target range: [{target.min():.3f}, {target.max():.3f}]")
+        
+        # Return zero metrics as fallback
+        return {
+            'dice_per_class': {cls: 0.0 for cls in classes},
+            'iou_per_class': {cls: 0.0 for cls in classes},
+            'overall_dice': 0.0,
+            'overall_iou': 0.0
+        }
 
 def train(config_path: str):
     """
@@ -121,7 +227,6 @@ def train(config_path: str):
         {
             "mirror": {"axes": {"x": 0.5, "y": 0.5}},
             "transpose": {"axes": ["x", "y"]},
-            "rotate": {"axes": {"x": [-180, 180], "y": [-180, 180]}},
         },
     )
     validation_time_limit = getattr(config, "validation_time_limit", None)
@@ -316,9 +421,13 @@ def train(config_path: str):
         epochs += checkpoint_epoch
     else:
         n_iter = 0
-
+    print_memory_usage("Before moving model to GPU")
     # %% Move model to device
     model = model.to(device)
+    print_memory_usage("After moving model to GPU")
+    print(f"Training {model_name} for {len(epochs)} epochs, starting at epoch {epochs[0]}, iteration {n_iter}...")
+    pytorch_total_params = sum(p.numel() for p in model.parameters())
+    print(f"Model {model_name} has {pytorch_total_params:,} parameters.")
 
     # Deduce number of spatial dimensions
     if "shape" in target_array_info:
@@ -353,6 +462,7 @@ def train(config_path: str):
     print(
         f"Training {model_name} for {len(epochs)} epochs, starting at epoch {epochs[0]}, iteration {n_iter}..."
     )
+    
     for epoch in epochs:
 
         # Set the model to training mode to enable backpropagation
@@ -372,8 +482,13 @@ def train(config_path: str):
         )
         optimizer.zero_grad()
         for epoch_iter in epoch_bar:
+            is_first_step = (n_iter == 0)
+
             # for some reason this seems to be faster...
             batch = next(loader)
+
+            if is_first_step:
+                print_memory_usage("1. After fetching batch (CPU)")
 
             # Increment the training iteration
             n_iter += 1
@@ -384,7 +499,17 @@ def train(config_path: str):
             else:
                 inputs = batch[input_keys[0]]
                 # Assumes the model input is a single tensor
+
+            if is_first_step:
+                print_memory_usage("2. After moving batch to GPU")
+                print(f"   - Input tensor shape: {inputs.shape}, dtype: {inputs.dtype}")
+            
+
             outputs = model(inputs)
+
+            if is_first_step:
+                print_memory_usage("3. After model forward pass")
+                print(f"   - Output tensor shape: {outputs.shape}, dtype: {outputs.dtype}")
 
             # Compute the loss
             if len(target_keys) > 1:
@@ -394,8 +519,15 @@ def train(config_path: str):
                 # Assumes the model output is a single tensor
             loss = criterion(outputs, targets) / gradient_accumulation_steps
 
+            if is_first_step:
+                print_memory_usage("4. After loss calculation")
+
+                
             # Backward pass (compute the gradients)
             loss.backward()
+
+            if is_first_step:
+                print_memory_usage("5. After backward pass (gradients)")
 
             # Clip the gradients if necessary
             if max_grad_norm is not None:
@@ -431,7 +563,11 @@ def train(config_path: str):
 
         # Compute the validation score by averaging the loss across the validation set
         if len(val_loader.loader) > 0:
+            total_intersection = torch.zeros(len(classes), device=device)
+            total_pred_sum = torch.zeros(len(classes), device=device)
+            total_target_sum = torch.zeros(len(classes), device=device)
             val_score = 0
+    
             val_loader.refresh()
 
          # ------------------------- ADDED -------------------------------------#
@@ -466,23 +602,6 @@ def train(config_path: str):
             with torch.no_grad():
                 i = 0
                 for batch in val_bar:
-
-                    # --------- ADDED FOR IMAGE VISUALIZATION ------------------------ #
-                    if val_loader._visualization_batch is None or (i % 20 == 0 and random.random() < 0.1):
-                        if len(input_keys) > 1:
-                            vis_inputs = {key: batch[key].clone() for key in input_keys}
-                        else:
-                            vis_inputs = batch[input_keys[0]].clone()
-                        
-                        vis_outputs = model(vis_inputs if len(input_keys) > 1 else vis_inputs)
-                        
-                        if len(target_keys) > 1:
-                            vis_targets = {key: batch[key].clone() for key in target_keys}
-                        else:
-                            vis_targets = batch[target_keys[0]].clone()
-                        
-                        val_loader._visualization_batch = (vis_inputs, vis_targets, vis_outputs)
-                    # --------- ADDED END ---------------------------------------------------- #
                     if len(input_keys) > 1:
                         inputs = {key: batch[key] for key in input_keys}
                     else:
@@ -494,7 +613,21 @@ def train(config_path: str):
                         targets = {key: batch[key] for key in target_keys}
                     else:
                         targets = batch[target_keys[0]]
+                    
+                    if outputs.size(1) > 1: 
+                        pred_mask = torch.zeros_like(outputs)
+                        pred_mask.scatter_(1, outputs.argmax(dim=1, keepdim=True), 1)
+                    else: 
+                        pred_mask = (torch.sigmoid(outputs) > 0.5).float()
+
+                    target_mask = (targets > 0.5).float()
+
+                    total_intersection += (pred_mask * target_mask).sum(dim=(0,) + tuple(range(2, pred_mask.ndim)))
+                    total_pred_sum += pred_mask.sum(dim=(0,) + tuple(range(2, pred_mask.ndim)))
+                    total_target_sum += target_mask.sum(dim=(0,) + tuple(range(2, pred_mask.ndim)))
+
                     val_score += criterion(outputs, targets).item()
+
                     i += 1
 
                     # Check time limit
@@ -511,50 +644,96 @@ def train(config_path: str):
                         and i >= validation_batch_limit
                     ):
                         break
-                val_score /= i
 
-                # Log the validation using tensorboard
-                writer.add_scalar("validation", val_score, n_iter)
+                
+                if i > 0: # Avoid division by zero if validation set is empty
+                    avg_val_loss = val_score / i
+        
+                    epsilon = 1e-7
 
-                # Update the progress bar
-                post_fix_dict["Validation"] = f"{val_score:.4f}"
+                    # Calculate Dice score for each class
+                    dice_union = total_pred_sum + total_target_sum
+                    dice_per_class = torch.where(
+                        dice_union > 0,
+                        (2.0 * total_intersection + epsilon) / (dice_union + epsilon),
+                        1.0 # If a class is not in GT and not predicted, it's a perfect score for that class
+                    )
+
+                    # Calculate IoU (Jaccard) score for each class
+                    iou_union = total_pred_sum + total_target_sum - total_intersection
+                    iou_per_class = torch.where(
+                        iou_union > 0,
+                        (total_intersection + epsilon) / (iou_union + epsilon),
+                        1.0
+                    )
+
+                    # Now you can create your dictionaries and calculate the overall average
+                    avg_dice_per_class = {cls: score.item() for cls, score in zip(classes, dice_per_class)}
+                    avg_iou_per_class = {cls: score.item() for cls, score in zip(classes, iou_per_class)}
+                    overall_dice = dice_per_class.mean().item()
+                    overall_iou = iou_per_class.mean().item()
+
+                    writer.add_scalar("Validation", avg_val_loss, n_iter)
+                    writer.add_scalar("Dice", overall_dice, n_iter)
+                    writer.add_scalar("IoU", overall_iou, n_iter)
+                    
+                    # Log top 10 performing classes only
+                    sorted_dice = sorted(avg_dice_per_class.items(), key=lambda x: x[1], reverse=True)
+                    for i, (class_name, score) in enumerate(sorted_dice[:10]):
+                        writer.add_scalar(f"Dice_Top10/{class_name}", score, n_iter)
+                    
+                    low_dice = sorted(avg_dice_per_class.items(), key=lambda x: x[1], reverse=True)
+                    for i, (class_name, score) in enumerate(sorted_dice[-10:]):
+                        writer.add_scalar(f"Dice_Lowest10/{class_name}", score, n_iter)
+
+                    # ========== PROGRESS BAR ==========
+                    post_fix_dict["Validation"] = f"{avg_val_loss:.4f}"
+                    post_fix_dict["Dice"] = f"{overall_dice:.4f}"
+                    post_fix_dict["IoU"] = f"{overall_iou:.4f}"
+                    
+                    # ========== SIMPLE REPORTING ==========
+                    if epoch % 10 == 0: 
+                        print(f"\nEpoch {epoch} - Dice: {overall_dice:.4f} | IoU: {overall_iou:.4f}")
+                        print(f"   Best: {', '.join([f'{cls}:{score:.3f}' for cls, score in sorted_dice[:3]])}")
+                        print(f"   Worst: {', '.join([f'{cls}:{score:.3f}' for cls, score in sorted_dice[-3:]])}")
+            
 
         # Generate and save figures from the last batch of the validation to appear in tensorboard
         # TODO: Make this more general rather than only taking the first key
 
         # --------------------------- CHANGED TO SHOW RANDOM VALIDATION IMAGE -----------------------------
-        if hasattr(val_loader, '_visualization_batch') and val_loader._visualization_batch is not None:
-            vis_inputs, vis_targets, vis_outputs = val_loader._visualization_batch
+        # if hasattr(val_loader, '_visualization_batch') and val_loader._visualization_batch is not None:
+        #     vis_inputs, vis_targets, vis_outputs = val_loader._visualization_batch
             
-            # Convert to single tensors for visualization
-            if isinstance(vis_outputs, dict):
-                vis_outputs = list(vis_outputs.values())[0]
-            if isinstance(vis_inputs, dict):
-                vis_inputs = list(vis_inputs.values())[0]
-            if isinstance(vis_targets, dict):
-                vis_targets = list(vis_targets.values())[0]
+        #     # Convert to single tensors for visualization
+        #     if isinstance(vis_outputs, dict):
+        #         vis_outputs = list(vis_outputs.values())[0]
+        #     if isinstance(vis_inputs, dict):
+        #         vis_inputs = list(vis_inputs.values())[0]
+        #     if isinstance(vis_targets, dict):
+        #         vis_targets = list(vis_targets.values())[0]
                 
-            figs = get_fig_dict(vis_inputs, vis_targets, vis_outputs, classes)
-        else:
-            # Fallback to current batch if no saved batch
-            if isinstance(outputs, dict):
-                outputs = list(outputs.values())[0]
-            if isinstance(inputs, dict):
-                inputs = list(inputs.values())[0]
-            if isinstance(targets, dict):
-                targets = list(targets.values())[0]
-            figs = get_fig_dict(inputs, targets, outputs, classes)
+        #     figs = get_fig_dict(vis_inputs, vis_targets, vis_outputs, classes)
+        # else:
+        #     # Fallback to current batch if no saved batch
+        #     if isinstance(outputs, dict):
+        #         outputs = list(outputs.values())[0]
+        #     if isinstance(inputs, dict):
+        #         inputs = list(inputs.values())[0]
+        #     if isinstance(targets, dict):
+        #         targets = list(targets.values())[0]
+        #     figs = get_fig_dict(inputs, targets, outputs, classes)
 
-        for name, fig in figs.items():
-            writer.add_figure(name, fig, n_iter)
-            plt.close(fig)
+        # for name, fig in figs.items():
+        #     writer.add_figure(name, fig, n_iter)
+        #     plt.close(fig)
 
-        # if isinstance(outputs, dict):
-        #     outputs = list(outputs.values())[0]
-        # if isinstance(inputs, dict):
-        #     inputs = list(inputs.values())[0]
-        # if isinstance(targets, dict):
-        #     targets = list(targets.values())[0]
+        if isinstance(outputs, dict):
+            outputs = list(outputs.values())[0]
+        if isinstance(inputs, dict):
+            inputs = list(inputs.values())[0]
+        if isinstance(targets, dict):
+            targets = list(targets.values())[0]
         # figs = get_fig_dict(inputs, targets, outputs, classes)
         # for name, fig in figs.items():
         #     writer.add_figure(name, fig, n_iter)
