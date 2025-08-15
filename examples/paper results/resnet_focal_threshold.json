@@ -1,0 +1,451 @@
+{
+    "crop151": {
+        "ves": {
+            "accuracy": 0.975903125,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 192775,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 1.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "mito": {
+            "accuracy": 1.0,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0,
+            "false_positives": 678232,
+            "false_negatives": 0,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 0.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "perox": {
+            "accuracy": 1.0,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0,
+            "false_positives": 243192,
+            "false_negatives": 0,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 0.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "lyso": {
+            "accuracy": 1.0,
+            "dice_score": 1,
+            "iou": 1.0,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 0.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 1.0,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "endo": {
+            "accuracy": 0.95440075,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 364794,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 1.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "cell": {
+            "accuracy": 0.798983,
+            "dice_score": 0.888260756216151,
+            "iou": 0.798983,
+            "true_positives": 6391864,
+            "false_positives": 0,
+            "false_negatives": 1608136,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 0.201017,
+            "hausdorff_distance": 132.18169313486644,
+            "normalized_hausdorff_distance": 0.8270912815237822,
+            "combined_score": 0.8129156619143932,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        }
+    },
+    "crop124": {
+        "ves": {
+            "accuracy": 0.998814453125,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 75875,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 1.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "lyso": {
+            "accuracy": 0.989370609375,
+            "dice_score": 0.21817058025673453,
+            "iou": 0.12244190035215022,
+            "true_positives": 95304,
+            "false_positives": 27072,
+            "false_negatives": 655985,
+            "false_positive_ratio": 0.036034069445978846,
+            "false_negative_ratio": 0.8731460197074628,
+            "hausdorff_distance": 603.2068348145431,
+            "normalized_hausdorff_distance": 0.42049209169557705,
+            "combined_score": 0.22690493778288973,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "endo": {
+            "accuracy": 0.970483875,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 1889032,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 1.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "perox": {
+            "accuracy": 0.94178121875,
+            "dice_score": 0.030269423093381098,
+            "iou": 0.015367291064201288,
+            "true_positives": 128743,
+            "false_positives": 7430433,
+            "false_negatives": 818553,
+            "false_positive_ratio": 7.843834450900246,
+            "false_negative_ratio": 0.8640942218694051,
+            "hausdorff_distance": 639.2250705101526,
+            "normalized_hausdorff_distance": 0.3992932248409023,
+            "combined_score": 0.07833297649198398,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "mito": {
+            "accuracy": 0.837622890625,
+            "dice_score": 0.48345920441434054,
+            "iou": 0.3187907676612403,
+            "true_positives": 5297796,
+            "false_positives": 10838908,
+            "false_negatives": 481707,
+            "false_positive_ratio": 1.8754048574764992,
+            "false_negative_ratio": 0.08334747814820756,
+            "hausdorff_distance": 1311.0545373858404,
+            "normalized_hausdorff_distance": 0.15214137178042197,
+            "combined_score": 0.2202300267967901,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "cell": {
+            "accuracy": 0.5455073125,
+            "dice_score": 0.8284095826237005,
+            "iou": 0.7070812208236302,
+            "true_positives": 40439421,
+            "false_positives": 6666859,
+            "false_negatives": 10085765,
+            "false_positive_ratio": 0.13195120152551246,
+            "false_negative_ratio": 0.19961856251256552,
+            "hausdorff_distance": null,
+            "normalized_hausdorff_distance": 0.0,
+            "combined_score": 0.0,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        }
+    },
+    "crop138": {
+        "ves": {
+            "accuracy": 0.999741265625,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 16559,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 1.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "lyso": {
+            "accuracy": 1.0,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0,
+            "false_positives": 2816,
+            "false_negatives": 0,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 0.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "endo": {
+            "accuracy": 0.997345609375,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 169881,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 1.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "perox": {
+            "accuracy": 1.0,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0,
+            "false_positives": 9212232,
+            "false_negatives": 0,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 0.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "mito": {
+            "accuracy": 0.873269796875,
+            "dice_score": 0.7993729336490072,
+            "iou": 0.6657961960482053,
+            "true_positives": 11078366,
+            "false_positives": 1063706,
+            "false_negatives": 4497203,
+            "false_positive_ratio": 0.06829323538677784,
+            "false_negative_ratio": 0.2887344276154534,
+            "hausdorff_distance": 281.4698424669141,
+            "normalized_hausdorff_distance": 0.6674780112890633,
+            "combined_score": 0.6666365733006848,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "cell": {
+            "accuracy": 0.660588375,
+            "dice_score": 0.8646949871813421,
+            "iou": 0.761641125,
+            "true_positives": 48745032,
+            "false_positives": 0,
+            "false_negatives": 15254968,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 0.238358875,
+            "hausdorff_distance": 553.0424938465397,
+            "normalized_hausdorff_distance": 0.45190502106345054,
+            "combined_score": 0.5866766133364404,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        }
+    },
+    "label_scores": {
+        "ves": {
+            "accuracy": 0.997902875,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0.0,
+            "false_positives": 0.0,
+            "false_negatives": 54838.05882352941,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 1.0,
+            "hausdorff_distance": 0.0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0
+        },
+        "mito": {
+            "accuracy": 0.8639495,
+            "dice_score": 0.6036857120298108,
+            "iou": 0.46333504174562146,
+            "true_positives": 7706429.176470588,
+            "false_positives": 5641126.117647059,
+            "false_negatives": 2343016.470588235,
+            "false_positive_ratio": 0.9146814554650715,
+            "false_negative_ratio": 0.17509736741819343,
+            "hausdorff_distance": 749.4232375777668,
+            "normalized_hausdorff_distance": 0.44452676850328715,
+            "combined_score": 0.4173489882811646
+        },
+        "perox": {
+            "accuracy": 0.9726029264705882,
+            "dice_score": 0.014244434396885223,
+            "iou": 0.007231666383153547,
+            "true_positives": 60584.94117647059,
+            "false_positives": 7846147.764705882,
+            "false_negatives": 385201.4117647059,
+            "false_positive_ratio": 3.691216212188351,
+            "false_negative_ratio": 0.4066325749973671,
+            "hausdorff_distance": 300.81179788713064,
+            "normalized_hausdorff_distance": 0.7173144587486598,
+            "combined_score": 0.03686257717269834
+        },
+        "lyso": {
+            "accuracy": 0.9949979338235294,
+            "dice_score": 0.16149203776787507,
+            "iou": 0.11644324722454127,
+            "true_positives": 44848.94117647059,
+            "false_positives": 14064.941176470587,
+            "false_negatives": 308698.82352941175,
+            "false_positive_ratio": 0.01695720915104887,
+            "false_negative_ratio": 0.41089224456821777,
+            "hausdorff_distance": 283.8620399127262,
+            "normalized_hausdorff_distance": 0.7272903960920363,
+            "combined_score": 0.16560232366253633
+        },
+        "endo": {
+            "accuracy": 0.982178625,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "true_positives": 0.0,
+            "false_positives": 0.0,
+            "false_negatives": 990358.7058823529,
+            "false_positive_ratio": 0.0,
+            "false_negative_ratio": 1.0,
+            "hausdorff_distance": 0.0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0
+        },
+        "cell": {
+            "accuracy": 0.6145734411764706,
+            "dice_score": 0.8490057243915584,
+            "iou": 0.7381624568581789,
+            "true_positives": 42345146.35294118,
+            "false_positives": 3137345.411764706,
+            "false_negatives": 12019647.05882353,
+            "false_positive_ratio": 0.062094683070829396,
+            "false_negative_ratio": 0.2179315588294426,
+            "hausdorff_distance": null,
+            "normalized_hausdorff_distance": 0.2613136147077286,
+            "combined_score": 0.32390168050623036
+        }
+    },
+    "overall_instance_score": 0.15728592827043827,
+    "overall_semantic_score": NaN,
+    "overall_score": NaN
+}

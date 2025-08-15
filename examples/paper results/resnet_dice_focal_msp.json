@@ -1,0 +1,331 @@
+{
+    "crop151": {
+        "mito": {
+            "accuracy": 1.0,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "lyso": {
+            "accuracy": 1.0,
+            "dice_score": 1,
+            "iou": 1.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 1.0,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "perox": {
+            "accuracy": 1.0,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "endo": {
+            "accuracy": 0.96664025,
+            "dice_score": 0.40775430680116076,
+            "iou": 0.2560875551699423,
+            "hausdorff_distance": 245.4884312967462,
+            "normalized_hausdorff_distance": 0.7028778955702888,
+            "combined_score": 0.42426204385920413,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "ves": {
+            "accuracy": 0.976232625,
+            "dice_score": 0.07924340082226411,
+            "iou": 0.04125634703334493,
+            "hausdorff_distance": null,
+            "normalized_hausdorff_distance": 0.0,
+            "combined_score": 0.0,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "cell": {
+            "accuracy": 0.93142,
+            "dice_score": 0.9644924459723934,
+            "iou": 0.93142,
+            "hausdorff_distance": 85.0411665018772,
+            "normalized_hausdorff_distance": 0.8850273944456492,
+            "combined_score": 0.9079274286717891,
+            "num_voxels": 8000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        }
+    },
+    "crop138": {
+        "lyso": {
+            "accuracy": 1.0,
+            "dice_score": 1,
+            "iou": 1.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 1.0,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "perox": {
+            "accuracy": 1.0,
+            "dice_score": 0.0,
+            "iou": 0.0,
+            "hausdorff_distance": 0,
+            "normalized_hausdorff_distance": 1.0,
+            "combined_score": 0.0,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "ves": {
+            "accuracy": 0.999750890625,
+            "dice_score": 0.1096920440095096,
+            "iou": 0.05802866335185727,
+            "hausdorff_distance": 418.26625846269764,
+            "normalized_hausdorff_distance": 0.5484184219434692,
+            "combined_score": 0.17839279128629157,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "endo": {
+            "accuracy": 0.997756265625,
+            "dice_score": 0.30059200193306757,
+            "iou": 0.17688042087302716,
+            "hausdorff_distance": 158.4348924834102,
+            "normalized_hausdorff_distance": 0.7964863954448802,
+            "combined_score": 0.3753436410090502,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "mito": {
+            "accuracy": 0.969459140625,
+            "dice_score": 0.9568457077062618,
+            "iou": 0.9172619187544183,
+            "hausdorff_distance": 145.91385537929034,
+            "normalized_hausdorff_distance": 0.8109390071127504,
+            "combined_score": 0.8624636048303976,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "cell": {
+            "accuracy": 0.955661,
+            "dice_score": 0.9773278702188161,
+            "iou": 0.955661,
+            "hausdorff_distance": 41.569219381653056,
+            "normalized_hausdorff_distance": 0.9420452352542067,
+            "combined_score": 0.9488286945325117,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        }
+    },
+    "crop124": {
+        "lyso": {
+            "accuracy": 0.993278421875,
+            "dice_score": 0.655788572179538,
+            "iou": 0.48786117913225147,
+            "hausdorff_distance": 100.61193674872978,
+            "normalized_hausdorff_distance": 0.8654553256741513,
+            "combined_score": 0.6497861614944398,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "mito": {
+            "accuracy": 0.988838578125,
+            "dice_score": 0.9043336899660724,
+            "iou": 0.8253732744032893,
+            "hausdorff_distance": 255.84370228715812,
+            "normalized_hausdorff_distance": 0.6925018282972086,
+            "combined_score": 0.7560241408526129,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "perox": {
+            "accuracy": 0.99069625,
+            "dice_score": 0.42107870134638503,
+            "iou": 0.26668758075874277,
+            "hausdorff_distance": 902.2693257564711,
+            "normalized_hausdorff_distance": 0.2736664869905118,
+            "combined_score": 0.2701544990375758,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "ves": {
+            "accuracy": 0.998683015625,
+            "dice_score": 0.01961138821827768,
+            "iou": 0.009902797916331025,
+            "hausdorff_distance": 832.7582983136541,
+            "normalized_hausdorff_distance": 0.30239749395480586,
+            "combined_score": 0.05472276741027792,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "endo": {
+            "accuracy": 0.975516359375,
+            "dice_score": 0.3620868164098262,
+            "iou": 0.22106593929243615,
+            "hausdorff_distance": 356.36734688896615,
+            "normalized_hausdorff_distance": 0.5994053985768832,
+            "combined_score": 0.3640166444729633,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        },
+        "cell": {
+            "accuracy": 0.552729984375,
+            "dice_score": 0.9084873823654046,
+            "iou": 0.832319633953639,
+            "hausdorff_distance": null,
+            "normalized_hausdorff_distance": 0.0,
+            "combined_score": 0.0,
+            "num_voxels": 64000000,
+            "voxel_size": [
+                4.0,
+                4.0,
+                4.0
+            ],
+            "is_missing": false
+        }
+    },
+    "label_scores": {
+        "mito": {
+            "accuracy": 0.9803753970588235,
+            "dice_score": 0.8758491283163926,
+            "iou": 0.8200636203095094,
+            "hausdorff_distance": 189.0623800783287,
+            "normalized_hausdorff_distance": 0.7663250990164512,
+            "combined_score": 0.7616412920861226
+        },
+        "lyso": {
+            "accuracy": 0.9968369044117648,
+            "dice_score": 0.8380181516139003,
+            "iou": 0.758993496062236,
+            "hausdorff_distance": 47.346793764108135,
+            "normalized_hausdorff_distance": 0.936684859140777,
+            "combined_score": 0.8351934877620893
+        },
+        "perox": {
+            "accuracy": 0.9956217647058824,
+            "dice_score": 0.19815468298653416,
+            "iou": 0.12550003800411424,
+            "hausdorff_distance": 424.5973297677511,
+            "normalized_hausdorff_distance": 0.658195993877888,
+            "combined_score": 0.12713152895885924
+        },
+        "endo": {
+            "accuracy": 0.9854600735294118,
+            "dice_score": 0.3358344031496654,
+            "iou": 0.20233284920550876,
+            "hausdorff_distance": 256.70037331033865,
+            "normalized_hausdorff_distance": 0.6982360145731998,
+            "combined_score": 0.3728908428067831
+        },
+        "ves": {
+            "accuracy": 0.9978649338235294,
+            "dice_score": 0.06551005050850367,
+            "iou": 0.03439459042228536,
+            "hausdorff_distance": null,
+            "normalized_hausdorff_distance": 0.4003839604227177,
+            "combined_score": 0.10970143938662093
+        },
+        "cell": {
+            "accuracy": 0.7646204632352941,
+            "dice_score": 0.9441773215674211,
+            "iou": 0.8961920630370065,
+            "hausdorff_distance": null,
+            "normalized_hausdorff_distance": 0.4953758397929001,
+            "combined_score": 0.499915116760699
+        }
+    },
+    "overall_instance_score": 0.4510789512935291,
+    "overall_semantic_score": NaN,
+    "overall_score": NaN
+}
